@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  api:
+    build: ./api
+    ports:
+      - "3000:3000"  # Node.js API
+    depends_on:
+      - influxdb
+    env_file:
+      - ./api/.env
+
+  influxdb:
+    image: influxdb:1.8
+    ports:
+      - "8086:8086"  # InfluxDB
+    volumes:
+      - influxdb_data:/var/lib/influxdb
+    environment:
+      INFLUXDB_DB: random_database_name
+      INFLUXDB_USER: random_user
+      INFLUXDB_USER_PASSWORD: random_password
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3001:3000"  # Grafana
+    depends_on:
+      - influxdb
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: adminadmin  # Change for production use
+
+volumes:
+  influxdb_data:
+
